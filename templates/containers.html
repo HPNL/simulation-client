@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Containers</title>
+</head>
+<body>
+<h1>Containers in Pod: {{ pod }} (Namespace: {{ namespace }})</h1>
+<ul id="container-list"></ul>
+
+<script src="/static/script.js"></script>
+<script>
+    const namespace = "{{ namespace }}";
+    const pod = "{{ pod }}";
+
+    // Fetch containers
+    fetch(`/containers/${namespace}/${pod}`)
+        .then(response => response.json())
+        .then(data => {
+            const list = document.getElementById("container-list");
+            data.forEach(container => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                        <p>${container}</p>
+                        <button onclick="startContainer('${container}')">Start</button>
+                        <button onclick="stopContainer('${container}')">Stop</button>
+                    `;
+                list.appendChild(li);
+            });
+        });
+
+    function startContainer(container) {
+        fetch(`/containers/${namespace}/${pod}/${container}/start`, {method: "POST"})
+            .then(() => alert(`Container ${container} started`));
+    }
+
+    function stopContainer(container) {
+        fetch(`/containers/${namespace}/${pod}/${container}/stop`, {method: "POST"})
+            .then(() => alert(`Container ${container} stopped`));
+    }
+</script>
+</body>
+</html>
