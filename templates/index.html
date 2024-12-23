@@ -13,7 +13,7 @@
 <script src="/static/script.js"></script>
 <script>
     // Fetch namespaces
-    fetch("/namespaces/")
+    fetch("/api/namespaces/")
         .then(response => response.json())
         .then(data => {
             const list = document.getElementById("namespace-list");

@@ -16,7 +16,7 @@
     const namespace = urlParams.get("namespace");
 
     // Fetch pods
-    fetch(`/pods/${namespace}`)
+    fetch(`/api/pods/${namespace}`)
         .then(response => response.json())
         .then(data => {
             const list = document.getElementById("pod-list");

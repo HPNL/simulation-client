@@ -17,10 +17,17 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 # Templates
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
-app.include_router(namespace_router)
-app.include_router(pod_router)
-app.include_router(container_router)
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+def get_home(request: Request):
+    return templates.TemplateResponse("namespaces.html", {"request": request})
+
+
+@app.get("/pods", response_class=HTMLResponse)
+def get_pods_page(request: Request, namespace: str):
+    return templates.TemplateResponse("pods.html", {"request": request, "namespace": namespace})
+
+
+@app.get("/containers", response_class=HTMLResponse)
+def get_containers_page(request: Request, namespace: str, pod: str):
+    return templates.TemplateResponse("containers.html", {"request": request, "namespace": namespace, "pod": pod})

@@ -3,7 +3,7 @@ from kubernetes import client
 
 from app.k8s_client import get_k8s_client
 
-router = APIRouter(prefix="/namespaces", tags=["Namespaces"])
+router = APIRouter(prefix="/api/namespaces", tags=["Namespaces"])
 
 
 @router.get("/")
