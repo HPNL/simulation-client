@@ -17,6 +17,9 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 # Templates
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
+app.include_router(namespace_router)
+app.include_router(pod_router)
+app.include_router(container_router)
 
 @app.get("/", response_class=HTMLResponse)
 def get_home(request: Request):
