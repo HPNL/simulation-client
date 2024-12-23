@@ -12,7 +12,8 @@
 
 <script src="/static/script.js"></script>
 <script>
-    const namespace = "{{ namespace }}";
+    const urlParams = new URLSearchParams(window.location.search);
+    const namespace = urlParams.get("namespace");
 
     // Fetch pods
     fetch(`/pods/${namespace}`)
@@ -21,7 +22,7 @@
             const list = document.getElementById("pod-list");
             data.forEach(pod => {
                 const li = document.createElement("li");
-                li.innerHTML = `<a href="/containers?namespace=${namespace}&pod=${pod}">${pod}</a>`;
+                li.innerHTML = `<a href="/containers/${namespace}/${pod}">${pod}</a>`;
                 list.appendChild(li);
             });
         });

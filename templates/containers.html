@@ -7,38 +7,46 @@
     <title>Containers</title>
 </head>
 <body>
-<h1>Containers in Pod: {{ pod }} (Namespace: {{ namespace }})</h1>
+<h1>Containers</h1>
 <ul id="container-list"></ul>
 
-<script src="/static/script.js"></script>
 <script>
-    const namespace = "{{ namespace }}";
-    const pod = "{{ pod }}";
+    const urlParams = new URLSearchParams(window.location.search);
+    const namespace = urlParams.get("namespace");
+    const pod = urlParams.get("pod");
 
-    // Fetch containers
-    fetch(`/containers/${namespace}/${pod}`)
-        .then(response => response.json())
-        .then(data => {
-            const list = document.getElementById("container-list");
-            data.forEach(container => {
-                const li = document.createElement("li");
-                li.innerHTML = `
+    if (namespace && pod) {
+        document.querySelector("h1").textContent = `Containers in Pod: ${pod} (Namespace: ${namespace})`;
+
+        fetch(`/containers/${namespace}/${pod}`)
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById("container-list");
+                data.forEach(container => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
                         <p>${container}</p>
                         <button onclick="startContainer('${container}')">Start</button>
                         <button onclick="stopContainer('${container}')">Stop</button>
                     `;
-                list.appendChild(li);
-            });
-        });
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => console.error("Error fetching containers:", err));
+    } else {
+        alert("Namespace or Pod information is missing in the URL.");
+    }
 
     function startContainer(container) {
         fetch(`/containers/${namespace}/${pod}/${container}/start`, {method: "POST"})
-            .then(() => alert(`Container ${container} started`));
+            .then(() => alert(`Container ${container} started`))
+            .catch(err => console.error("Error starting container:", err));
     }
 
     function stopContainer(container) {
         fetch(`/containers/${namespace}/${pod}/${container}/stop`, {method: "POST"})
-            .then(() => alert(`Container ${container} stopped`));
+            .then(() => alert(`Container ${container} stopped`))
+            .catch(err => console.error("Error stopping container:", err));
     }
 </script>
 </body>
