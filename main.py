@@ -20,7 +20,7 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 @app.get("/", response_class=HTMLResponse)
 def get_home(request: Request):
-    return templates.TemplateResponse("namespaces.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/pods", response_class=HTMLResponse)
