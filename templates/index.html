@@ -13,13 +13,13 @@
 <script src="/static/script.js"></script>
 <script>
     // Fetch namespaces
-    fetch("/api/namespaces/")
+    fetch("/api/v1/namespaces/")
         .then(response => response.json())
         .then(data => {
             const list = document.getElementById("namespace-list");
             data.forEach(ns => {
                 const li = document.createElement("li");
-                li.innerHTML = `<a href="/pods?namespace=${ns}">${ns}</a>`;
+                li.innerHTML = `<a href="/api/v1/pods?namespace=${ns}">${ns}</a>`;
                 list.appendChild(li);
             });
         });

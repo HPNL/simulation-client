@@ -18,7 +18,7 @@
     if (namespace && pod) {
         document.querySelector("h1").textContent = `Containers in Pod: ${pod} (Namespace: ${namespace})`;
 
-        fetch(`/api/containers/${namespace}/${pod}`)
+        fetch(`/api/v1/containers/${namespace}/${pod}`)
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById("container-list");
@@ -38,13 +38,13 @@
     }
 
     function startContainer(container) {
-        fetch(`/api/containers/${namespace}/${pod}/${container}/start`, {method: "POST"})
+        fetch(`/api/v1/containers/${namespace}/${pod}/${container}/start`, {method: "POST"})
             .then(() => alert(`Container ${container} started`))
             .catch(err => console.error("Error starting container:", err));
     }
 
     function stopContainer(container) {
-        fetch(`/api/containers/${namespace}/${pod}/${container}/stop`, {method: "POST"})
+        fetch(`/api/v1/containers/${namespace}/${pod}/${container}/stop`, {method: "POST"})
             .then(() => alert(`Container ${container} stopped`))
             .catch(err => console.error("Error stopping container:", err));
     }

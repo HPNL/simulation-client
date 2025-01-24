@@ -3,7 +3,7 @@ from kubernetes import client
 
 from app.k8s_client import get_k8s_client
 
-router = APIRouter(prefix="/api/pods", tags=["Pods"])
+router = APIRouter(prefix="/api/v1/pods", tags=["Pods"])
 
 
 @router.get("/{namespace}")

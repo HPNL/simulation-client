@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.k8s_client import get_k8s_client
 
-router = APIRouter(prefix="/api/containers", tags=["Containers"])
+router = APIRouter(prefix="/api/v1/containers", tags=["Containers"])
 
 
 @router.get("/{namespace}/{pod_name}")
