@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
+
 from app.k8s_client import get_k8s_client
 
 router = APIRouter(prefix="/api/v1/containers", tags=["Containers"])
