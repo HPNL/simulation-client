@@ -1,7 +1,8 @@
 /* General body styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Vazir', sans-serif;
     background-color: #f8f9fa;
+    direction: rtl;
     margin: 0;
     padding: 0;
     color: #333;
@@ -9,7 +10,10 @@ body {
 
 /* Dashboard container */
 .dashboard-container {
-    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1200px;
     margin: 50px auto;
     padding: 20px;
     background-color: #ffffff;
@@ -19,21 +23,30 @@ body {
 
 /* Header */
 header {
-    position: relative;
-    text-align: center;
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    width: 100%;
     margin-bottom: 20px;
+    padding: 0 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    direction: rtl;
+    width: 100%;
 }
 
 header h1 {
     font-size: 24px;
     color: #007bff;
+    margin-right: 20px; /* Spacing between the welcome message and the logout button */
 }
 
 /* Logout button */
 .logout-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
     text-decoration: none;
     color: #ffffff;
     background-color: #dc3545;
@@ -47,8 +60,15 @@ header h1 {
 }
 
 /* Main content */
+.dashboard-content {
+    display: flex;
+    width: 100%;
+}
+
 main {
-    text-align: left;
+    flex: 1;
+    margin-right: 20px;
+    text-align: right; /* Align content to the right for Persian text */
 }
 
 main h2 {
@@ -81,4 +101,60 @@ main h2 {
 .container-status {
     font-size: 14px;
     color: #6c757d;
+}
+
+/* Dashboard menu */
+.dashboard-menu {
+    width: 250px;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+}
+
+.dashboard-menu ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.dashboard-menu ul li {
+    margin-bottom: 15px;
+}
+
+.dashboard-menu ul li a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    font-size: 16px;
+    display: block;
+    padding: 8px 0;
+}
+
+.dashboard-menu ul li a:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-radius: 5px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .dashboard-content {
+        flex-direction: column;
+    }
+
+    .dashboard-menu {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    header h1 {
+        margin-left: 0; /* Remove left margin for smaller screens */
+    }
 }

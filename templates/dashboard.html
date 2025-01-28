@@ -1,35 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="dashboard-container">
-    <header>
-        <!-- دکمه لاگ اوت به صورت فرم POST -->
+<header>
+    <div class="header-right">
         <form action="/logout" method="get">
-            <button type="submit" class="logout-button">Logout</button>
+            <button type="submit" class="logout-button">خروج</button>
         </form>
-        <h1>Welcome, {{ username }}</h1>
-    </header>
-    <main>
-        <h2>Your Containers</h2>
-        {% if containers %}
-        <ul class="container-list">
-            {% for container in containers %}
-            <li class="container-item">
-                <div class="container-name">{{ container.container_name }}</div>
-                <div class="container-status">Status: {{ container.status }}</div>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No containers found.</p>
-        {% endif %}
-    </main>
+        <h1>خوش آمدید، {{ username }}</h1>
+    </div>
+</header>
+<div class="dashboard-container">
+
+    <div class="dashboard-content">
+        <nav class="dashboard-menu">
+            <ul>
+                <li><a href="/running-simulations">شبیه‌سازی‌های در حال اجرا</a></li>
+                <li><a href="/finished-simulations">شبیه‌سازی‌های تمام شده</a></li>
+                <li><a href="/simulation-management">مدیریت شبیه‌سازی</a></li>
+                <li><a href="/user-management">مدیریت کاربران</a></li>
+            </ul>
+        </nav>
+        <main>
+            <h2>کانتینرهای شما</h2>
+            {% if containers %}
+            <ul class="container-list">
+                {% for container in containers %}
+                <li class="container-item">
+                    <div class="container-name">{{ container.container_name }}</div>
+                    <div class="container-status">وضعیت: {{ container.status }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>هیچ کانتینری پیدا نشد.</p>
+            {% endif %}
+        </main>
+    </div>
 </div>
 </body>
 </html>
