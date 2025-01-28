@@ -1,7 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Text
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Text, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -28,3 +31,14 @@ class Container(Base):
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
     user = relationship("User", back_populates="containers")
+
+
+class Simulation(Base):
+    __tablename__ = 'simulations'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False)
+    simulation_data = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    status = Column(String, default="NotStarted")

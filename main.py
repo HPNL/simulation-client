@@ -1,9 +1,7 @@
 from pathlib import Path
 
-from app.db.database import engine
-from app.db.models import Base
-from fastapi import Depends, Form
 from fastapi import FastAPI, Request
+from fastapi import Form, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -11,8 +9,11 @@ from passlib.hash import bcrypt
 from starlette.responses import RedirectResponse, Response
 
 from app.container_apis import router as container_router
+from app.controller.simulation_controller import router as simulation_router
 from app.controller.user_controller import router as user_router
 from app.db.database import SessionLocal, get_db
+from app.db.database import engine
+from app.db.models import Base
 from app.db.models import User, Container
 from app.namespace_apis import router as namespace_router
 from app.pod_apis import router as pod_router
@@ -37,6 +38,7 @@ app.include_router(user_router)
 app.include_router(namespace_router)
 app.include_router(pod_router)
 app.include_router(container_router)
+app.include_router(simulation_router)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -74,13 +76,6 @@ async def logout(request: Request, response: Response):
     return RedirectResponse(url="/login")
 
 
-from fastapi import HTTPException, Form, Depends
-from fastapi.responses import RedirectResponse
-from app.db.models import User, Container
-from app.db.database import SessionLocal, get_db
-from passlib.hash import bcrypt
-
-
 @app.post("/login")
 async def login(
         username: str = Form(...),
@@ -89,7 +84,6 @@ async def login(
 ):
     user = db.query(User).filter(User.username == username).first()
     if not user or not bcrypt.verify(password, user.password_hash):
-        # ارسال پیغام خطا به صفحه
         return templates.TemplateResponse(
             "login.html",
             {

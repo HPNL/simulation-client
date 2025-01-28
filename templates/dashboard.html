@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+    <style>
+        .delete-btn {
+            background-color: #f44336; /* رنگ قرمز */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f; /* رنگ قرمز تیره‌تر */
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -14,11 +28,10 @@
         <form action="/logout" method="get">
             <button type="submit" class="logout-button">خروج</button>
         </form>
-        <h1>خوش آمدید، {{ username }}</h1>
+        <h1>{{ username }} خوش آمدید</h1>
     </div>
 </header>
 <div class="dashboard-container">
-
     <div class="dashboard-content">
         <nav class="dashboard-menu">
             <ul>
@@ -42,8 +55,214 @@
             {% else %}
             <p>هیچ کانتینری پیدا نشد.</p>
             {% endif %}
+
+            <h2>لیست شبیه‌سازی‌های ذخیره‌شده</h2>
+
+            <button id="addSimulationBtn" class="add-simulation-btn">افزودن شبیه‌سازی</button>
+
+            <div id="simulationForm" class="simulation-form" style="display:none;">
+                <textarea id="simulationJson" placeholder="اطلاعات شبیه‌سازی به صورت JSON وارد کنید"></textarea>
+                <div class="simulation-buttons">
+                    <button id="saveSimulationBtn" class="simulation-btn">ذخیره</button>
+                    <button id="runSimulationBtn" class="simulation-btn">اجرای شبیه‌سازی</button>
+                </div>
+            </div>
+
+            <table id="simulationTable">
+                <thead>
+                <tr>
+                    <th>شناسه</th>
+                    <th>نام کاربری</th>
+                    <th>اطلاعات شبیه‌سازی</th>
+                    <th>تاریخ</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- ردیف‌های شبیه‌سازی‌ها اینجا به صورت دینامیک اضافه می‌شوند -->
+                </tbody>
+            </table>
+
         </main>
     </div>
 </div>
+
+<script>
+    window.onload = function () {
+        const username = "{{ username }}";
+        fetch(`/api/v1/simulations/list/${username}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector("#simulationTable tbody");
+
+                // نمایش 10 شبیه‌سازی اول
+                const initialDisplayCount = 10;
+
+                if (data && data.length > 0) {
+                    data.slice(0, initialDisplayCount).forEach(simulation => {
+                        const row = document.createElement("tr");
+
+                        const idCell = document.createElement("td");
+                        idCell.textContent = simulation.id;
+                        row.appendChild(idCell);
+
+                        const usernameCell = document.createElement("td");
+                        usernameCell.textContent = simulation.username;
+                        row.appendChild(usernameCell);
+
+                        const dataCell = document.createElement("td");
+                        dataCell.textContent = simulation.simulation_data;
+                        row.appendChild(dataCell);
+
+                        const dateCell = document.createElement("td");
+                        dateCell.textContent = new Date(simulation.created_at).toLocaleString();
+                        row.appendChild(dateCell);
+
+                        // ایجاد سلول عملیات (دکمه حذف)
+                        const actionsCell = document.createElement("td");
+                        const deleteButton = document.createElement("button");
+                        deleteButton.textContent = "حذف";
+                        deleteButton.classList.add("delete-btn");
+                        deleteButton.addEventListener("click", function () {
+                            deleteSimulation(simulation.id);  // فراخوانی تابع حذف
+                        });
+                        actionsCell.appendChild(deleteButton);
+                        row.appendChild(actionsCell);
+
+                        tableBody.appendChild(row);
+                    });
+
+                    // دکمه بارگذاری بیشتر را نمایش می‌دهیم
+                    if (data.length > initialDisplayCount) {
+                        const loadMoreBtn = document.createElement("button");
+                        loadMoreBtn.textContent = "بارگذاری بیشتر";
+                        loadMoreBtn.id = "loadMoreBtn";
+
+                        loadMoreBtn.onclick = function () {
+                            // نمایش تمام ردیف‌ها
+                            data.forEach((simulation, index) => {
+                                if (index >= initialDisplayCount) {
+                                    const row = document.createElement("tr");
+
+                                    const idCell = document.createElement("td");
+                                    idCell.textContent = simulation.id;
+                                    row.appendChild(idCell);
+
+                                    const usernameCell = document.createElement("td");
+                                    usernameCell.textContent = simulation.username;
+                                    row.appendChild(usernameCell);
+
+                                    const dataCell = document.createElement("td");
+                                    dataCell.textContent = simulation.simulation_data;
+                                    row.appendChild(dataCell);
+
+                                    const dateCell = document.createElement("td");
+                                    dateCell.textContent = new Date(simulation.created_at).toLocaleString();
+                                    row.appendChild(dateCell);
+
+                                    // ایجاد سلول عملیات (دکمه حذف)
+                                    const actionsCell = document.createElement("td");
+                                    const deleteButton = document.createElement("button");
+                                    deleteButton.textContent = "حذف";
+                                    deleteButton.classList.add("delete-btn");
+                                    deleteButton.addEventListener("click", function () {
+                                        deleteSimulation(simulation.id);  // فراخوانی تابع حذف
+                                    });
+                                    actionsCell.appendChild(deleteButton);
+                                    row.appendChild(actionsCell);
+
+                                    tableBody.appendChild(row);
+                                }
+                            });
+
+                            // مخفی کردن دکمه بارگذاری بیشتر بعد از نمایش تمام داده‌ها
+                            loadMoreBtn.style.display = "none";
+                        };
+
+                        tableBody.appendChild(loadMoreBtn);
+                    }
+                } else {
+                    const row = document.createElement("tr");
+                    const noDataCell = document.createElement("td");
+                    noDataCell.colSpan = 5; // تعداد ستون‌ها به 5 تغییر کرده است
+                    noDataCell.textContent = "هیچ شبیه‌سازی ذخیره‌شده‌ای وجود ندارد.";
+                    row.appendChild(noDataCell);
+                    tableBody.appendChild(row);
+                }
+            })
+            .catch(error => console.error("Error fetching simulations:", error));
+    }
+
+    function deleteSimulation(simulationId) {
+        if (confirm("آیا مطمئن هستید که می‌خواهید این شبیه‌سازی را حذف کنید؟")) {
+            fetch(`/api/v1/simulations/${simulationId}`, {
+                method: "DELETE",
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Simulation deleted:", data);
+                    alert("Simulation deleted!");
+
+                    // پس از حذف، جدول را مجدداً بارگذاری می‌کنیم
+                    window.location.reload();
+                })
+                .catch(error => console.error("Error deleting simulation:", error));
+        }
+    }
+
+    document.getElementById("saveSimulationBtn").onclick = function () {
+        var simulationData = document.getElementById("simulationJson").value;
+
+        fetch("/api/v1/simulations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: "{{ username }}",
+                simulation_data: simulationData
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Simulation saved:", data);
+                alert("Simulation saved!");
+
+                // مخفی کردن فرم شبیه‌سازی
+                document.getElementById("simulationForm").style.display = "none";
+
+                // پاک کردن متن داخل textarea
+                document.getElementById("simulationJson").value = "";
+
+                // بارگذاری مجدد لیست شبیه‌سازی‌ها
+                window.location.reload(); // این خط باعث می‌شود که صفحه مجدداً بارگذاری شود و جدول بروزرسانی شود
+            })
+            .catch(error => console.error("Error saving simulation:", error));
+    }
+
+    document.getElementById("addSimulationBtn").addEventListener("click", function () {
+        var form = document.getElementById("simulationForm");
+
+        // بررسی می‌کنیم که فرم نمایش داده شده است یا نه
+        if (form.style.display === "none" || form.style.display === "") {
+            form.style.display = "block"; // فرم را نمایش می‌دهیم
+        } else {
+            form.style.display = "none"; // فرم را مخفی می‌کنیم
+        }
+    });
+
+    document.getElementById("runSimulationBtn").onclick = function () {
+        var simulationId = 1;
+        fetch(`/api/v1/run_simulation/${simulationId}`, {
+            method: "POST"
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Simulation result:", data);
+                alert(data.message);
+            })
+            .catch(error => console.error("Error running simulation:", error));
+    }
+</script>
 </body>
 </html>
