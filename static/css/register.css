@@ -1,6 +1,7 @@
 body.register-page {
-    font-family: Arial, sans-serif;
+    font-family: 'Vazir', sans-serif;
     margin: 0;
+    direction: rtl;
     padding: 0;
     display: flex;
     justify-content: center;
@@ -35,6 +36,8 @@ h2 {
 .register-form-group label {
     font-size: 14px;
     color: #555;
+    direction: rtl;
+    text-align: right;
     display: block;
     margin-bottom: 5px;
 }
