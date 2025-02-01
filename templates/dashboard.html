@@ -64,7 +64,6 @@
                 <textarea id="simulationJson" placeholder="اطلاعات شبیه‌سازی به صورت JSON وارد کنید"></textarea>
                 <div class="simulation-buttons">
                     <button id="saveSimulationBtn" class="simulation-btn">ذخیره</button>
-                    <button id="runSimulationBtn" class="simulation-btn">اجرای شبیه‌سازی</button>
                 </div>
             </div>
 
@@ -73,13 +72,13 @@
                 <tr>
                     <th>شناسه</th>
                     <th>نام کاربری</th>
+                    <th>وضعیت</th>
                     <th>اطلاعات شبیه‌سازی</th>
                     <th>تاریخ</th>
                     <th>عملیات</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- ردیف‌های شبیه‌سازی‌ها اینجا به صورت دینامیک اضافه می‌شوند -->
                 </tbody>
             </table>
 
@@ -110,6 +109,10 @@
                         usernameCell.textContent = simulation.username;
                         row.appendChild(usernameCell);
 
+                        const statusCell = document.createElement("td");
+                        statusCell.textContent = simulation.status;
+                        row.appendChild(statusCell);
+
                         const dataCell = document.createElement("td");
                         dataCell.textContent = simulation.simulation_data;
                         row.appendChild(dataCell);
@@ -120,13 +123,24 @@
 
                         // ایجاد سلول عملیات (دکمه حذف)
                         const actionsCell = document.createElement("td");
+                        // ایجاد دکمه حذف
                         const deleteButton = document.createElement("button");
                         deleteButton.textContent = "حذف";
                         deleteButton.classList.add("delete-btn");
                         deleteButton.addEventListener("click", function () {
-                            deleteSimulation(simulation.id);  // فراخوانی تابع حذف
+                            deleteSimulation(simulation.id);
                         });
                         actionsCell.appendChild(deleteButton);
+
+                        // ایجاد دکمه اجرای شبیه سازی
+                        const runButton = document.createElement("button");
+                        runButton.textContent = "اجرای شبیه سازی";
+                        runButton.classList.add("run-btn");
+                        runButton.addEventListener("click", function () {
+                            console.log("Running simulation with ID:", simulation.id); // بررسی مقدار ID
+                            runSimulation(simulation.id);  // مطمئن شوید که تابع درست را صدا می‌زنید
+                        });
+                        actionsCell.appendChild(runButton);
                         row.appendChild(actionsCell);
 
                         tableBody.appendChild(row);
@@ -159,18 +173,28 @@
                                     const dateCell = document.createElement("td");
                                     dateCell.textContent = new Date(simulation.created_at).toLocaleString();
                                     row.appendChild(dateCell);
-
-                                    // ایجاد سلول عملیات (دکمه حذف)
                                     const actionsCell = document.createElement("td");
+
+                                    // ایجاد دکمه حذف
                                     const deleteButton = document.createElement("button");
                                     deleteButton.textContent = "حذف";
                                     deleteButton.classList.add("delete-btn");
                                     deleteButton.addEventListener("click", function () {
-                                        deleteSimulation(simulation.id);  // فراخوانی تابع حذف
+                                        deleteSimulation(simulation.id);
                                     });
                                     actionsCell.appendChild(deleteButton);
-                                    row.appendChild(actionsCell);
 
+                                    // ایجاد دکمه اجرای شبیه سازی
+                                    const runButton = document.createElement("button");
+                                    runButton.textContent = "اجرای شبیه سازی";
+                                    runButton.classList.add("run-btn");
+                                    runButton.addEventListener("click", function () {
+                                        console.log("Running simulation with ID:", simulation.id); // بررسی مقدار ID
+                                        runSimulation(simulation.id);  // مطمئن شوید که تابع درست را صدا می‌زنید
+                                    });
+                                    actionsCell.appendChild(runButton);
+
+                                    row.appendChild(actionsCell);
                                     tableBody.appendChild(row);
                                 }
                             });
@@ -208,6 +232,18 @@
                 })
                 .catch(error => console.error("Error deleting simulation:", error));
         }
+    }
+
+    function runSimulation(simulationId) {
+        fetch(`/api/v1/run_simulation/${simulationId}`, {
+            method: "POST"
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Simulation result:", data);
+                alert(data.message);
+            })
+            .catch(error => console.error("Error running simulation:", error));
     }
 
     document.getElementById("saveSimulationBtn").onclick = function () {
@@ -251,18 +287,6 @@
         }
     });
 
-    document.getElementById("runSimulationBtn").onclick = function () {
-        var simulationId = 1;
-        fetch(`/api/v1/run_simulation/${simulationId}`, {
-            method: "POST"
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Simulation result:", data);
-                alert(data.message);
-            })
-            .catch(error => console.error("Error running simulation:", error));
-    }
 </script>
 </body>
 </html>

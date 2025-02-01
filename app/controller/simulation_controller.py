@@ -6,6 +6,9 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.db.models import Simulation, User
 
+from dotenv import load_dotenv
+import os
+
 router = APIRouter(prefix="/api/v1", tags=["Simulations"])
 
 
@@ -68,20 +71,22 @@ def delete_simulation(simulation_id: int, db: Session = Depends(get_db)):
 
 @router.post("/run_simulation/{simulation_id}")
 def run_simulation(simulation_id: int, db: Session = Depends(get_db)):
+    load_dotenv()
+
+    # خواندن مقادیر از فایل .env
     simulation = db.query(Simulation).filter(Simulation.id == simulation_id).first()
 
-    if simulation is None:
-        raise HTTPException(status_code=404, detail="Simulation not found")
-
-    if simulation.status != "NotStarted":
-        raise HTTPException(status_code=400, detail="Simulation is already started or completed")
+    # if simulation is None:
+    #     raise HTTPException(status_code=404, detail="Simulation not found")
+    #
+    # if simulation.status != "NotStarted":
+    #     raise HTTPException(status_code=400, detail="Simulation is already started or completed")
 
     simulation.status = "Running"
     db.commit()
 
-    response = requests.post('http://localhost:8800/api/v1/simulator', json={
-        'simulation_data': simulation.simulation_data
-    })
+    simulator_url = os.getenv("SIMULATOR.URL")
+    response = requests.post(simulator_url, simulation.simulation_data)
 
     if response.status_code == 200:
         simulation.status = "Completed"
