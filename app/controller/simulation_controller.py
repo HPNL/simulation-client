@@ -22,7 +22,7 @@ class SimulationUpdate(BaseModel):
     status: str
 
 
-@router.post("/simulations")
+@router.post("/simulations/creeate")
 def create_simulation(simulation: SimulationCreate,
                       db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == simulation.username).first()
@@ -69,7 +69,7 @@ def delete_simulation(simulation_id: int, db: Session = Depends(get_db)):
     return {"detail": "Simulation deleted successfully"}
 
 
-@router.post("/run_simulation/{simulation_id}")
+@router.post("/simulation/run/{simulation_id}")
 def run_simulation(simulation_id: int, db: Session = Depends(get_db)):
     load_dotenv()
 

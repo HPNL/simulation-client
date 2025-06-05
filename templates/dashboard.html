@@ -25,13 +25,13 @@
 <body>
 <header>
     <div class="header-right">
-        <form action="/logout" method="get">
+        <form action="/api/v1/auth/logout" method="get">
             <button type="submit" class="logout-button">خروج</button>
         </form>
         <h1>{{ username }} خوش آمدید</h1>
     </div>
 </header>
-<div class="dashboard-container">
+<div class="dashboard">
     <div class="dashboard-content">
         <nav class="dashboard-menu">
             <ul>
@@ -42,19 +42,6 @@
             </ul>
         </nav>
         <main>
-            <h2>کانتینرهای شما</h2>
-            {% if containers %}
-            <ul class="container-list">
-                {% for container in containers %}
-                <li class="container-item">
-                    <div class="container-name">{{ container.container_name }}</div>
-                    <div class="container-status">وضعیت: {{ container.status }}</div>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>هیچ کانتینری پیدا نشد.</p>
-            {% endif %}
 
             <h2>لیست شبیه‌سازی‌های ذخیره‌شده</h2>
 
@@ -90,131 +77,131 @@
     window.onload = function () {
         const username = "{{ username }}";
         fetch(`/api/v1/simulations/list/${username}`)
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector("#simulationTable tbody");
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector("#simulationTable tbody");
 
-                // نمایش 10 شبیه‌سازی اول
-                const initialDisplayCount = 10;
+                    // نمایش 10 شبیه‌سازی اول
+                    const initialDisplayCount = 10;
 
-                if (data && data.length > 0) {
-                    data.slice(0, initialDisplayCount).forEach(simulation => {
-                        const row = document.createElement("tr");
+                    if (data && data.length > 0) {
+                        data.slice(0, initialDisplayCount).forEach(simulation => {
+                            const row = document.createElement("tr");
 
-                        const idCell = document.createElement("td");
-                        idCell.textContent = simulation.id;
-                        row.appendChild(idCell);
+                            const idCell = document.createElement("td");
+                            idCell.textContent = simulation.id;
+                            row.appendChild(idCell);
 
-                        const usernameCell = document.createElement("td");
-                        usernameCell.textContent = simulation.username;
-                        row.appendChild(usernameCell);
+                            const usernameCell = document.createElement("td");
+                            usernameCell.textContent = simulation.username;
+                            row.appendChild(usernameCell);
 
-                        const statusCell = document.createElement("td");
-                        statusCell.textContent = simulation.status;
-                        row.appendChild(statusCell);
+                            const statusCell = document.createElement("td");
+                            statusCell.textContent = simulation.status;
+                            row.appendChild(statusCell);
 
-                        const dataCell = document.createElement("td");
-                        dataCell.textContent = simulation.simulation_data;
-                        row.appendChild(dataCell);
+                            const dataCell = document.createElement("td");
+                            dataCell.textContent = simulation.simulation_data;
+                            row.appendChild(dataCell);
 
-                        const dateCell = document.createElement("td");
-                        dateCell.textContent = new Date(simulation.created_at).toLocaleString();
-                        row.appendChild(dateCell);
+                            const dateCell = document.createElement("td");
+                            dateCell.textContent = new Date(simulation.created_at).toLocaleString();
+                            row.appendChild(dateCell);
 
-                        // ایجاد سلول عملیات (دکمه حذف)
-                        const actionsCell = document.createElement("td");
-                        // ایجاد دکمه حذف
-                        const deleteButton = document.createElement("button");
-                        deleteButton.textContent = "حذف";
-                        deleteButton.classList.add("delete-btn");
-                        deleteButton.addEventListener("click", function () {
-                            deleteSimulation(simulation.id);
-                        });
-                        actionsCell.appendChild(deleteButton);
-
-                        // ایجاد دکمه اجرای شبیه سازی
-                        const runButton = document.createElement("button");
-                        runButton.textContent = "اجرای شبیه سازی";
-                        runButton.classList.add("run-btn");
-                        runButton.addEventListener("click", function () {
-                            console.log("Running simulation with ID:", simulation.id); // بررسی مقدار ID
-                            runSimulation(simulation.id);  // مطمئن شوید که تابع درست را صدا می‌زنید
-                        });
-                        actionsCell.appendChild(runButton);
-                        row.appendChild(actionsCell);
-
-                        tableBody.appendChild(row);
-                    });
-
-                    // دکمه بارگذاری بیشتر را نمایش می‌دهیم
-                    if (data.length > initialDisplayCount) {
-                        const loadMoreBtn = document.createElement("button");
-                        loadMoreBtn.textContent = "بارگذاری بیشتر";
-                        loadMoreBtn.id = "loadMoreBtn";
-
-                        loadMoreBtn.onclick = function () {
-                            // نمایش تمام ردیف‌ها
-                            data.forEach((simulation, index) => {
-                                if (index >= initialDisplayCount) {
-                                    const row = document.createElement("tr");
-
-                                    const idCell = document.createElement("td");
-                                    idCell.textContent = simulation.id;
-                                    row.appendChild(idCell);
-
-                                    const usernameCell = document.createElement("td");
-                                    usernameCell.textContent = simulation.username;
-                                    row.appendChild(usernameCell);
-
-                                    const dataCell = document.createElement("td");
-                                    dataCell.textContent = simulation.simulation_data;
-                                    row.appendChild(dataCell);
-
-                                    const dateCell = document.createElement("td");
-                                    dateCell.textContent = new Date(simulation.created_at).toLocaleString();
-                                    row.appendChild(dateCell);
-                                    const actionsCell = document.createElement("td");
-
-                                    // ایجاد دکمه حذف
-                                    const deleteButton = document.createElement("button");
-                                    deleteButton.textContent = "حذف";
-                                    deleteButton.classList.add("delete-btn");
-                                    deleteButton.addEventListener("click", function () {
-                                        deleteSimulation(simulation.id);
-                                    });
-                                    actionsCell.appendChild(deleteButton);
-
-                                    // ایجاد دکمه اجرای شبیه سازی
-                                    const runButton = document.createElement("button");
-                                    runButton.textContent = "اجرای شبیه سازی";
-                                    runButton.classList.add("run-btn");
-                                    runButton.addEventListener("click", function () {
-                                        console.log("Running simulation with ID:", simulation.id); // بررسی مقدار ID
-                                        runSimulation(simulation.id);  // مطمئن شوید که تابع درست را صدا می‌زنید
-                                    });
-                                    actionsCell.appendChild(runButton);
-
-                                    row.appendChild(actionsCell);
-                                    tableBody.appendChild(row);
-                                }
+                            // ایجاد سلول عملیات (دکمه حذف)
+                            const actionsCell = document.createElement("td");
+                            // ایجاد دکمه حذف
+                            const deleteButton = document.createElement("button");
+                            deleteButton.textContent = "حذف";
+                            deleteButton.classList.add("delete-btn");
+                            deleteButton.addEventListener("click", function () {
+                                deleteSimulation(simulation.id);
                             });
+                            actionsCell.appendChild(deleteButton);
 
-                            // مخفی کردن دکمه بارگذاری بیشتر بعد از نمایش تمام داده‌ها
-                            loadMoreBtn.style.display = "none";
-                        };
+                            // ایجاد دکمه اجرای شبیه سازی
+                            const runButton = document.createElement("button");
+                            runButton.textContent = "اجرای شبیه سازی";
+                            runButton.classList.add("run-btn");
+                            runButton.addEventListener("click", function () {
+                                console.log("Running simulation with ID:", simulation.id); // بررسی مقدار ID
+                                runSimulation(simulation.id);  // مطمئن شوید که تابع درست را صدا می‌زنید
+                            });
+                            actionsCell.appendChild(runButton);
+                            row.appendChild(actionsCell);
 
-                        tableBody.appendChild(loadMoreBtn);
+                            tableBody.appendChild(row);
+                        });
+
+                        // دکمه بارگذاری بیشتر را نمایش می‌دهیم
+                        if (data.length > initialDisplayCount) {
+                            const loadMoreBtn = document.createElement("button");
+                            loadMoreBtn.textContent = "بارگذاری بیشتر";
+                            loadMoreBtn.id = "loadMoreBtn";
+
+                            loadMoreBtn.onclick = function () {
+                                // نمایش تمام ردیف‌ها
+                                data.forEach((simulation, index) => {
+                                    if (index >= initialDisplayCount) {
+                                        const row = document.createElement("tr");
+
+                                        const idCell = document.createElement("td");
+                                        idCell.textContent = simulation.id;
+                                        row.appendChild(idCell);
+
+                                        const usernameCell = document.createElement("td");
+                                        usernameCell.textContent = simulation.username;
+                                        row.appendChild(usernameCell);
+
+                                        const dataCell = document.createElement("td");
+                                        dataCell.textContent = simulation.simulation_data;
+                                        row.appendChild(dataCell);
+
+                                        const dateCell = document.createElement("td");
+                                        dateCell.textContent = new Date(simulation.created_at).toLocaleString();
+                                        row.appendChild(dateCell);
+                                        const actionsCell = document.createElement("td");
+
+                                        // ایجاد دکمه حذف
+                                        const deleteButton = document.createElement("button");
+                                        deleteButton.textContent = "حذف";
+                                        deleteButton.classList.add("delete-btn");
+                                        deleteButton.addEventListener("click", function () {
+                                            deleteSimulation(simulation.id);
+                                        });
+                                        actionsCell.appendChild(deleteButton);
+
+                                        // ایجاد دکمه اجرای شبیه سازی
+                                        const runButton = document.createElement("button");
+                                        runButton.textContent = "اجرای شبیه سازی";
+                                        runButton.classList.add("run-btn");
+                                        runButton.addEventListener("click", function () {
+                                            console.log("Running simulation with ID:", simulation.id); // بررسی مقدار ID
+                                            runSimulation(simulation.id);  // مطمئن شوید که تابع درست را صدا می‌زنید
+                                        });
+                                        actionsCell.appendChild(runButton);
+
+                                        row.appendChild(actionsCell);
+                                        tableBody.appendChild(row);
+                                    }
+                                });
+
+                                // مخفی کردن دکمه بارگذاری بیشتر بعد از نمایش تمام داده‌ها
+                                loadMoreBtn.style.display = "none";
+                            };
+
+                            tableBody.appendChild(loadMoreBtn);
+                        }
+                    } else {
+                        const row = document.createElement("tr");
+                        const noDataCell = document.createElement("td");
+                        noDataCell.colSpan = 5; // تعداد ستون‌ها به 5 تغییر کرده است
+                        noDataCell.textContent = "هیچ شبیه‌سازی ذخیره‌شده‌ای وجود ندارد.";
+                        row.appendChild(noDataCell);
+                        tableBody.appendChild(row);
                     }
-                } else {
-                    const row = document.createElement("tr");
-                    const noDataCell = document.createElement("td");
-                    noDataCell.colSpan = 5; // تعداد ستون‌ها به 5 تغییر کرده است
-                    noDataCell.textContent = "هیچ شبیه‌سازی ذخیره‌شده‌ای وجود ندارد.";
-                    row.appendChild(noDataCell);
-                    tableBody.appendChild(row);
-                }
-            })
-            .catch(error => console.error("Error fetching simulations:", error));
+                })
+                .catch(error => console.error("Error fetching simulations:", error));
     }
 
     function deleteSimulation(simulationId) {
@@ -222,15 +209,15 @@
             fetch(`/api/v1/simulations/${simulationId}`, {
                 method: "DELETE",
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Simulation deleted:", data);
-                    alert("Simulation deleted!");
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Simulation deleted:", data);
+                        alert("Simulation deleted!");
 
-                    // پس از حذف، جدول را مجدداً بارگذاری می‌کنیم
-                    window.location.reload();
-                })
-                .catch(error => console.error("Error deleting simulation:", error));
+                        // پس از حذف، جدول را مجدداً بارگذاری می‌کنیم
+                        window.location.reload();
+                    })
+                    .catch(error => console.error("Error deleting simulation:", error));
         }
     }
 
@@ -238,12 +225,12 @@
         fetch(`/api/v1/run_simulation/${simulationId}`, {
             method: "POST"
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Simulation result:", data);
-                alert(data.message);
-            })
-            .catch(error => console.error("Error running simulation:", error));
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Simulation result:", data);
+                    alert(data.message);
+                })
+                .catch(error => console.error("Error running simulation:", error));
     }
 
     document.getElementById("saveSimulationBtn").onclick = function () {
@@ -259,21 +246,21 @@
                 simulation_data: simulationData
             })
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log("Simulation saved:", data);
-                alert("Simulation saved!");
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Simulation saved:", data);
+                    alert("Simulation saved!");
 
-                // مخفی کردن فرم شبیه‌سازی
-                document.getElementById("simulationForm").style.display = "none";
+                    // مخفی کردن فرم شبیه‌سازی
+                    document.getElementById("simulationForm").style.display = "none";
 
-                // پاک کردن متن داخل textarea
-                document.getElementById("simulationJson").value = "";
+                    // پاک کردن متن داخل textarea
+                    document.getElementById("simulationJson").value = "";
 
-                // بارگذاری مجدد لیست شبیه‌سازی‌ها
-                window.location.reload(); // این خط باعث می‌شود که صفحه مجدداً بارگذاری شود و جدول بروزرسانی شود
-            })
-            .catch(error => console.error("Error saving simulation:", error));
+                    // بارگذاری مجدد لیست شبیه‌سازی‌ها
+                    window.location.reload(); // این خط باعث می‌شود که صفحه مجدداً بارگذاری شود و جدول بروزرسانی شود
+                })
+                .catch(error => console.error("Error saving simulation:", error));
     }
 
     document.getElementById("addSimulationBtn").addEventListener("click", function () {
