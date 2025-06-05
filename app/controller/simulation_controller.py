@@ -22,7 +22,7 @@ class SimulationUpdate(BaseModel):
     status: str
 
 
-@router.post("/simulations/creeate")
+@router.post("/simulations/create")
 def create_simulation(simulation: SimulationCreate,
                       db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == simulation.username).first()

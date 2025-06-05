@@ -63,8 +63,8 @@ async def login(
         return templates.TemplateResponse(
             "login.html",
             {
-                "request": {},  # request باید در اینجا به درستی ارسال شود
-                "error": "Invalid credentials"  # پیغام خطا
+                "request": {},
+                "error": "Invalid credentials"
             }
         )
 

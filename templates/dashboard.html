@@ -236,7 +236,7 @@
     document.getElementById("saveSimulationBtn").onclick = function () {
         var simulationData = document.getElementById("simulationJson").value;
 
-        fetch("/api/v1/simulations", {
+        fetch("/api/v1/simulations/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
