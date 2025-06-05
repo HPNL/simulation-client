@@ -1,5 +1,4 @@
 fastapi~=0.115.6
-kubernetes~=31.0.0
 bleach~=6.2.0
 psycopg2-binary~=2.9.10
 email-validator~=2.2.0

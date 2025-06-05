@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/HTNL-Kuber-Client.iml" filepath="$PROJECT_DIR$/.idea/HTNL-Kuber-Client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/simulation-client.iml" filepath="$PROJECT_DIR$/.idea/simulation-client.iml" />
     </modules>
   </component>
 </project>

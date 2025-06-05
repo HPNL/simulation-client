@@ -8,23 +8,20 @@ from fastapi.templating import Jinja2Templates
 from passlib.hash import bcrypt
 from starlette.responses import RedirectResponse, Response
 
-from app.container_apis import router as container_router
 from app.controller.simulation_controller import router as simulation_router
 from app.controller.user_controller import router as user_router
 from app.db.database import SessionLocal, get_db
 from app.db.database import engine
 from app.db.models import Base
 from app.db.models import User, Container
-from app.namespace_apis import router as namespace_router
-from app.pod_apis import router as pod_router
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(
-    title="Kuber-Based Simulator Manager",
+    title="Simulator Client Manager",
     description="This is the API documentation for Simulator Manager",
     version="1.0.0",
-    docs_url="/swagger-ui",
+    docs_url="/swagger",
     redoc_url="/swagger-redoc"
 )
 
@@ -35,9 +32,6 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 app.include_router(user_router)
-app.include_router(namespace_router)
-app.include_router(pod_router)
-app.include_router(container_router)
 app.include_router(simulation_router)
 
 
@@ -92,7 +86,6 @@ async def login(
             }
         )
 
-    # دریافت کانتینرهای کاربر
     containers = db.query(Container).filter(Container.user_id == user.id).all()
     return templates.TemplateResponse(
         "dashboard.html", {"request": {}, "username": user.username, "containers": containers}
@@ -106,5 +99,4 @@ async def startup_event():
 
 
 def initialize_database():
-    # ایجاد جداول در صورت عدم وجود
     Base.metadata.create_all(bind=engine)
